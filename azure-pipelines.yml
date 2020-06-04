@@ -23,7 +23,7 @@ stages:
     - task: Docker@2
       inputs:
         containerRegistry: 'DockerConnection'
-        repository: 'macdoc1/hello-world-python/'
+        repository: 'hello-world-python'
         command: 'buildAndPush'
         Dockerfile: '**/Dockerfile'
     - task: CopyFiles@2
