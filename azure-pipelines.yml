@@ -1,48 +1,35 @@
-# Docker
-# Build a Docker image 
-# https://docs.microsoft.com/azure/devops/pipelines/languages/docker
-
 trigger:
 - master
 
-resources:
-- repo: self
+pool:
+  vmImage: 'Ubuntu-16.04'
 
 variables:
-  tag: '$(Build.BuildId)'
+  imageName: 'hello-world-python'
 
-stages:
-- stage: Build
-  displayName: Build image
-  jobs:  
-  - job: Build
-    displayName: Build
-    pool:
-      vmImage: 'ubuntu-latest'
-    steps:
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'DockerConnection'
-        command: 'login'
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'DockerConnection'
-        repository: 'hello-world-python'
-        command: 'build'
-        Dockerfile: '**/Dockerfile'
-    - task: Docker@2
-      inputs:
-        containerRegistry: 'DockerConnection'
-        repository: 'hello-world-python'
-        command: 'Push'
-        Dockerfile: '**/Dockerfile'
-    - task: CopyFiles@2
-      inputs:
-        SourceFolder: '$(Build.SourcesDirectory)'
-        Contents: '**'
-        TargetFolder: '$(build.artifactstagingdirectory)'
-    - task: PublishBuildArtifacts@1
-      inputs:
-        PathtoPublish: '$(Build.ArtifactStagingDirectory)'
-        ArtifactName: 'drop'
-        publishLocation: 'Container'
+steps:
+- task: Docker@2
+  inputs:
+    containerRegistry: 'DockerConnection'
+    repository: 'macdoc1/hello-world-python'
+    command: 'build'
+    Dockerfile: '**/Dockerfile'
+- task: Docker@2
+  inputs:
+    containerRegistry: 'DockerConnection'
+    command: 'login'
+- task: Docker@2
+  inputs:
+    containerRegistry: 'DockerConnection'
+    repository: 'macdoc1/hello-world-python'
+    command: 'push'
+- task: CopyFiles@2
+  inputs:
+    SourceFolder: '$(Build.SourcesDirectory)'
+    Contents: '**'
+    TargetFolder: '$(build.artifactstagingdirectory)'
+- task: PublishBuildArtifacts@1
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)'
+    ArtifactName: 'drop'
+    publishLocation: 'Container'
